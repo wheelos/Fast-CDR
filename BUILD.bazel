@@ -1,0 +1,48 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+load(
+    "@cmake_configure_file//:cmake_configure_file.bzl",
+    "cmake_configure_file",
+)
+
+cmake_configure_file(
+    name = "config",
+    src = "include/fastcdr/config.h.in",
+    out = "include/fastcdr/config.h",
+    cmakelists = [
+        "CMakeLists.txt",
+    ],
+    defines = [
+        "__BIG_ENDIAN__",
+        "HAVE_CXX11",
+        "HAVE_CXX0X",
+        "FASTCDR_VERSION_STR=1.1.0",
+        "FASTCDR_VERSION_MAJOR=1",
+        "FASTCDR_VERSION_MINOR=1",
+        "FASTCDR_VERSION_MICRO=0",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
+    name = "fastcdr",
+    hdrs = glob([
+        "include/**/*.h",
+        "include/**/*.hpp"
+    ]) + [
+        ":config",
+    ],
+    srcs = [
+        "src/cpp/Cdr.cpp",
+        "src/cpp/FastCdr.cpp",
+        "src/cpp/FastBuffer.cpp",
+        "src/cpp/exceptions/Exception.cpp",
+        "src/cpp/exceptions/NotEnoughMemoryException.cpp",
+        "src/cpp/exceptions/BadParamException.cpp",
+    ],
+    strip_include_prefix = "include",
+)
